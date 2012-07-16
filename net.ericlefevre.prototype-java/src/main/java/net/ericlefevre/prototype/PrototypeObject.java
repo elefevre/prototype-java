@@ -15,7 +15,7 @@ public class PrototypeObject {
 	}
 
 	public PrototypeObject clone() {
-		return new PrototypeObject();
+		return this;
 	}
 
 	public PrototypeObject add(String name, PrototypeObject attributeValue) {

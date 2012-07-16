@@ -9,6 +9,8 @@ public class PrototypeObjectTest {
 	@Test
 	public void can_clone_an_object() {
 		assertThat(root().clone()).isEqualTo(new PrototypeObject());
+		assertThat(root().add("attributeName", root()).clone()).isEqualTo(
+				root().add("attributeName", root()));
 	}
 
 	@Test
