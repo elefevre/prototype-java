@@ -10,13 +10,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class PrototypeObject {
 	private final Map<String, PrototypeObject> members = new HashMap<String, PrototypeObject>();
+	private final PrototypeObject prototype;
+
+	PrototypeObject(PrototypeObject prototype) {
+		this.prototype = prototype;
+	}
 
 	public static PrototypeObject create() {
-		return new PrototypeObject();
+		return new PrototypeObject(null);
 	}
 
 	public PrototypeObject clone() {
-		PrototypeObject clone = new PrototypeObject();
+		PrototypeObject clone = new PrototypeObject(this);
 		for (Entry<String, PrototypeObject> member : members.entrySet()) {
 			clone.add(member.getKey(), member.getValue());
 		}
@@ -30,6 +35,10 @@ public class PrototypeObject {
 	}
 
 	public PrototypeObject member(String name) {
+		if (!members.containsKey(name)) {
+			return prototype.member(name);
+		}
+
 		return members.get(name);
 	}
 

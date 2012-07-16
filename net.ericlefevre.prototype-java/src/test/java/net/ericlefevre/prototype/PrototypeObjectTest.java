@@ -7,19 +7,21 @@ import org.junit.Test;
 
 public class PrototypeObjectTest {
 	@Test
-	public void can_clone_an_object() {
-		assertThat(create().clone()).isEqualTo(new PrototypeObject());
-		assertThat(create().add("attributeName", create()).clone()).isEqualTo(
-				create().add("attributeName", create()));
-	}
-
-	@Test
 	public void cloned_objects_have_no_impact_on_their_original_prototype() {
 		PrototypeObject object = create();
 		PrototypeObject clone = object.clone();
-		clone.add("attribute", new PrototypeObject());
+		clone.add("attribute", create());
 
 		assertThat(object).isEqualTo(create());
+	}
+
+	@Test
+	public void cloned_objects_receive_the_changes_on_their_original_prototype() {
+		PrototypeObject object = create();
+		PrototypeObject clone = object.clone();
+		object.add("attribute", create());
+
+		assertThat(clone.member("attribute")).isEqualTo(create());
 	}
 
 	@Test
