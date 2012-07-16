@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class PrototypeObjectTest {
 	@Test
-	public void can_clone_an_empty_object() {
+	public void can_clone_an_object() {
 		assertThat(root().clone()).isEqualTo(new PrototypeObject());
 	}
 
