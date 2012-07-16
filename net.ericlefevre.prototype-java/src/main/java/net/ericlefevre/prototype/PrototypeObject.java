@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class PrototypeObject {
 	private final Map<String, PrototypeObject> members = new HashMap<String, PrototypeObject>();
 
-	public static PrototypeObject root() {
+	public static PrototypeObject create() {
 		return new PrototypeObject();
 	}
 
