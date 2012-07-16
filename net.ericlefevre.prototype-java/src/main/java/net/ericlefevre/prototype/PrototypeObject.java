@@ -2,6 +2,7 @@ package net.ericlefevre.prototype;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -15,7 +16,11 @@ public class PrototypeObject {
 	}
 
 	public PrototypeObject clone() {
-		return this;
+		PrototypeObject clone = new PrototypeObject();
+		for (Entry<String, PrototypeObject> member : members.entrySet()) {
+			clone.add(member.getKey(), member.getValue());
+		}
+		return clone;
 	}
 
 	public PrototypeObject add(String name, PrototypeObject attributeValue) {

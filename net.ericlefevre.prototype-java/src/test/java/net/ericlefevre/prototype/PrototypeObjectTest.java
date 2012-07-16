@@ -14,6 +14,15 @@ public class PrototypeObjectTest {
 	}
 
 	@Test
+	public void cloned_objects_have_no_impact_on_their_original_prototype() {
+		PrototypeObject object = create();
+		PrototypeObject clone = object.clone();
+		clone.add("attribute", new PrototypeObject());
+
+		assertThat(object).isEqualTo(create());
+	}
+
+	@Test
 	public void an_object_can_have_an_attribute() {
 		assertThat(
 				create().add("attributeName", create()).member("attributeName"))
@@ -43,4 +52,5 @@ public class PrototypeObjectTest {
 		assertThat(create().add("attributeName", create())).isEqualTo(
 				create().add("attributeName", create()));
 	}
+
 }
