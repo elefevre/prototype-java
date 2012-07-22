@@ -55,4 +55,26 @@ public class PrototypeObjectTest {
 				create().add("attributeName", create()));
 	}
 
+	@Test
+	public void an_object_can_have_active_members() {
+		create().add("methodName", new Method());
+	}
+
+	@Test
+	public void methods_return_the_current_object_by_default() {
+		PrototypeObject object = create().add("methodName", new Method());
+		assertThat(object.member("methodName")).isSameAs(object);
+	}
+
+	@Test
+	public void methods_can_return_a_value() {
+		PrototypeObject object = create().add("methodName", new Method() {
+			@Override
+			public PrototypeObject execute() {
+				return create().add("attributeName", create());
+			}
+		});
+		assertThat(object.member("methodName")).isEqualTo(
+				create().add("attributeName", create()));
+	}
 }
