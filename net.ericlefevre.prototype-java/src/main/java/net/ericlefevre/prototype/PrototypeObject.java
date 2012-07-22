@@ -1,5 +1,7 @@
 package net.ericlefevre.prototype;
 
+import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,7 +9,6 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 
 public class PrototypeObject {
 	private final Map<String, PrototypeObject> members = new HashMap<String, PrototypeObject>();
@@ -16,6 +17,10 @@ public class PrototypeObject {
 
 	PrototypeObject(PrototypeObject prototype) {
 		this.prototype = prototype;
+	}
+
+	protected PrototypeObject() {
+		this(null);
 	}
 
 	public static PrototypeObject create() {
@@ -49,10 +54,11 @@ public class PrototypeObject {
 			member = prototype.member(name);
 		}
 
-		if (member instanceof Method) {
-			return ((Method) member).execute();
-		}
-		return member;
+		return member.execute();
+	}
+
+	public PrototypeObject execute() {
+		return this;
 	}
 
 	@Override
@@ -68,7 +74,6 @@ public class PrototypeObject {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this,
-				ToStringStyle.SHORT_PREFIX_STYLE);
+		return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
 	}
 }
