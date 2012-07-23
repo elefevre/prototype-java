@@ -6,6 +6,9 @@ import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
 
 public class PrototypeObjectTest {
+	private static final PrototypeObject VALUE = create().add("attributeName",
+			create());
+
 	@Test
 	public void cloned_objects_have_no_impact_on_their_original_prototype() {
 		PrototypeObject object = create();
@@ -26,9 +29,7 @@ public class PrototypeObjectTest {
 
 	@Test
 	public void an_object_can_have_an_attribute() {
-		assertThat(
-				create().add("attributeName", create()).member("attributeName"))
-				.isEqualTo(create());
+		assertThat(VALUE.member("attributeName")).isEqualTo(create());
 		assertThat(
 				create().add("attributeName",
 						create().add("subAttribute", create())).member(
@@ -45,14 +46,12 @@ public class PrototypeObjectTest {
 
 	@Test
 	public void an_object_with_an_attribute_is_not_equal_to_an_empty_object() {
-		assertThat(create().add("attributeName", create())).isNotEqualTo(
-				create());
+		assertThat(VALUE).isNotEqualTo(create());
 	}
 
 	@Test
 	public void an_object_with_an_attribute_is_not_equal_to_another_object_with_the_same_attribute() {
-		assertThat(create().add("attributeName", create())).isEqualTo(
-				create().add("attributeName", create()));
+		assertThat(VALUE).isEqualTo(VALUE);
 	}
 
 	@Test
@@ -60,11 +59,24 @@ public class PrototypeObjectTest {
 		PrototypeObject object = create().add("methodName",
 				new PrototypeObject() {
 					@Override
-					public PrototypeObject execute() {
-						return create().add("attributeName", create());
+					public PrototypeObject execute(
+							PrototypeObject... parameters) {
+						return VALUE;
 					}
 				});
-		assertThat(object.member("methodName")).isEqualTo(
-				create().add("attributeName", create()));
+		assertThat(object.member("methodName")).isEqualTo(VALUE);
+	}
+
+	@Test
+	public void methods_can_take_parameters() {
+		PrototypeObject object = create().add("methodName",
+				new PrototypeObject() {
+					@Override
+					public PrototypeObject execute(
+							PrototypeObject... parameters) {
+						return parameters[0];
+					}
+				});
+		assertThat(object.member("methodName", VALUE)).isEqualTo(VALUE);
 	}
 }

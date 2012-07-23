@@ -46,7 +46,7 @@ public class PrototypeObject {
 		this.context = context;
 	}
 
-	public PrototypeObject member(String name) {
+	public PrototypeObject member(String name, PrototypeObject... parameters) {
 		PrototypeObject member;
 		if (members.containsKey(name)) {
 			member = members.get(name);
@@ -54,10 +54,10 @@ public class PrototypeObject {
 			member = prototype.member(name);
 		}
 
-		return member.execute();
+		return member.execute(parameters);
 	}
 
-	public PrototypeObject execute() {
+	public PrototypeObject execute(PrototypeObject... parameters) {
 		return this;
 	}
 
