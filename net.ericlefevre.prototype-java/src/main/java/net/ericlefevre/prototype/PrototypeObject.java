@@ -4,16 +4,14 @@ import static org.apache.commons.lang.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class PrototypeObject {
-	private final Map<String, PrototypeObject> members = new HashMap<String, PrototypeObject>();
+	private final Map<String, Object> members = new HashMap<String, Object>();
 	private final PrototypeObject prototype;
-	PrototypeObject context;
 
 	PrototypeObject(PrototypeObject prototype) {
 		this.prototype = prototype;
@@ -28,37 +26,59 @@ public class PrototypeObject {
 	}
 
 	public PrototypeObject clone() {
-		PrototypeObject clone = new PrototypeObject(this);
-		for (Entry<String, PrototypeObject> member : members.entrySet()) {
-			clone.add(member.getKey(), member.getValue());
-		}
+		PrototypeObject clone = instanciateClone();
 		return clone;
 	}
 
-	public PrototypeObject add(String name, PrototypeObject attributeValue) {
+	protected PrototypeObject instanciateClone() {
+		return new PrototypeObject(this);
+	}
+
+	public PrototypeObject add(String name, Object attributeValue) {
 		members.put(name, attributeValue);
-		attributeValue.context(this);
 
 		return this;
 	}
 
-	private void context(PrototypeObject context) {
-		this.context = context;
+	public Object member(String name, PrototypeObject... parameters) {
+		Object member = member(name);
+
+		if (member instanceof PrototypeObject) {
+			return ((PrototypeObject) member).execute(this, parameters);
+		} else {
+			return member;
+		}
 	}
 
-	public PrototypeObject member(String name, PrototypeObject... parameters) {
-		PrototypeObject member;
+	private Object member(String name) {
+		Object member;
 		if (members.containsKey(name)) {
 			member = members.get(name);
 		} else {
+			if (prototype == null) {
+				throw new RuntimeException("Could not find member '" + name
+						+ "'");
+			}
 			member = prototype.member(name);
 		}
 
-		return member.execute(parameters);
+		return member;
 	}
 
-	public PrototypeObject execute(PrototypeObject... parameters) {
+	public PrototypeObject execute(PrototypeObject context,
+			PrototypeObject... parameters) {
 		return this;
+	}
+
+	public boolean isCloneOf(PrototypeObject prototype) {
+		if (this.prototype == null) {
+			return false;
+		}
+		if (this.prototype == prototype) {
+			return true;
+		}
+
+		return this.prototype.isCloneOf(prototype);
 	}
 
 	@Override
@@ -76,4 +96,5 @@ public class PrototypeObject {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
 	}
+
 }

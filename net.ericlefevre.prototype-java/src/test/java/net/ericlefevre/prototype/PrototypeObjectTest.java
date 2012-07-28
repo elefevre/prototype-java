@@ -19,12 +19,22 @@ public class PrototypeObjectTest {
 	}
 
 	@Test
-	public void cloned_objects_receive_the_changes_on_their_original_prototype() {
+	public void cloned_objects_receive_the_new_members_added_on_their_prototype() {
 		PrototypeObject object = create();
 		PrototypeObject clone = object.clone();
 		object.add("attribute", create());
 
 		assertThat(clone.member("attribute")).isEqualTo(create());
+	}
+
+	@Test
+	public void cloned_objects_receive_the_new_values_for_the_existing_members_on_their_prototype() {
+		PrototypeObject object = create();
+		object.add("attribute", create());
+		PrototypeObject clone = object.clone();
+		object.add("attribute", 1);
+
+		assertThat(clone.member("attribute")).isEqualTo(1);
 	}
 
 	@Test
@@ -59,7 +69,7 @@ public class PrototypeObjectTest {
 		PrototypeObject object = create().add("methodName",
 				new PrototypeObject() {
 					@Override
-					public PrototypeObject execute(
+					public PrototypeObject execute(PrototypeObject context,
 							PrototypeObject... parameters) {
 						return VALUE;
 					}
@@ -72,11 +82,48 @@ public class PrototypeObjectTest {
 		PrototypeObject object = create().add("methodName",
 				new PrototypeObject() {
 					@Override
-					public PrototypeObject execute(
+					public PrototypeObject execute(PrototypeObject context,
 							PrototypeObject... parameters) {
 						return parameters[0];
 					}
 				});
 		assertThat(object.member("methodName", VALUE)).isEqualTo(VALUE);
+	}
+
+	@Test
+	public void methods_can_refer_to_members_of_their_context() {
+		PrototypeObject object = create().add("methodName",
+				new PrototypeObject() {
+					@Override
+					public PrototypeObject execute(PrototypeObject context,
+							PrototypeObject... parameters) {
+						return (PrototypeObject) context.member("value");
+					}
+				});
+		object.add("value", VALUE);
+		assertThat(object.member("methodName")).isEqualTo(VALUE);
+	}
+
+	@Test
+	public void methods_can_refer_to_members_of_clones_of_their_context() {
+		PrototypeObject object = create().add("methodName",
+				new PrototypeObject() {
+					@Override
+					public PrototypeObject execute(PrototypeObject context,
+							PrototypeObject... parameters) {
+						return (PrototypeObject) context.member("value");
+					}
+				});
+		PrototypeObject clone = object.clone().add("value", VALUE);
+		System.out.println(clone.member("value"));
+		assertThat(clone.member("methodName")).isEqualTo(VALUE);
+	}
+
+	@Test
+	public void can_check_if_a_prototype_is_a_clone_of_another() {
+		assertThat(create().isCloneOf(create())).isFalse();
+		PrototypeObject prototype = create();
+		assertThat(prototype.clone().isCloneOf(prototype)).isTrue();
+		assertThat(prototype.clone().clone().isCloneOf(prototype)).isTrue();
 	}
 }
