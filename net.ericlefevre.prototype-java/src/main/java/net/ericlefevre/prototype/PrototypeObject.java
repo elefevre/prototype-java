@@ -11,27 +11,32 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class PrototypeObject {
 	private final Map<String, Object> members = new HashMap<String, Object>();
-	private final PrototypeObject prototype;
+	final PrototypeObject prototype;
+	private final String name;
 
-	PrototypeObject(PrototypeObject prototype) {
+	PrototypeObject(PrototypeObject prototype, String name) {
 		this.prototype = prototype;
+		this.name = name;
 	}
 
 	protected PrototypeObject() {
-		this(null);
+		this(null, null);
 	}
 
 	public static PrototypeObject create() {
-		return new PrototypeObject(null);
+		return new PrototypeObject(null, null);
+	}
+
+	public static PrototypeObject create(String name) {
+		return new PrototypeObject(null, name);
 	}
 
 	public PrototypeObject clone() {
-		PrototypeObject clone = instanciateClone();
-		return clone;
+		return new PrototypeObject(this, null);
 	}
 
-	protected PrototypeObject instanciateClone() {
-		return new PrototypeObject(this);
+	public PrototypeObject clone(String name) {
+		return new PrototypeObject(this, name);
 	}
 
 	public PrototypeObject add(String name, Object attributeValue) {
@@ -46,10 +51,15 @@ public class PrototypeObject {
 	 * value.
 	 */
 	public Object member(String name, PrototypeObject... parameters) {
+		return member(this, name, parameters);
+	}
+
+	private Object member(PrototypeObject context, String name,
+			PrototypeObject... parameters) {
 		Object member = member(name);
 
 		if (member instanceof PrototypeObject) {
-			return ((PrototypeObject) member).execute(this, parameters);
+			return ((PrototypeObject) member).execute(context, parameters);
 		} else {
 			return member;
 		}
@@ -62,7 +72,7 @@ public class PrototypeObject {
 		} else {
 			if (prototype == null) {
 				throw new RuntimeException("Could not find member '" + name
-						+ "'");
+						+ "' in prototype '" + this + "'");
 			}
 			member = prototype.member(name);
 		}
@@ -77,6 +87,11 @@ public class PrototypeObject {
 
 	public PrototypeObject $(String name, PrototypeObject... parameters) {
 		return (PrototypeObject) member(name, parameters);
+	}
+
+	protected PrototypeObject $(PrototypeObject context, String name,
+			PrototypeObject... parameters) {
+		return (PrototypeObject) member(context, name, parameters);
 	}
 
 	public PrototypeObject execute(PrototypeObject context,
@@ -131,6 +146,9 @@ public class PrototypeObject {
 
 	@Override
 	public String toString() {
+		if (name != null) {
+			return name;
+		}
 		return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
 	}
 

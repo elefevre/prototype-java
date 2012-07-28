@@ -165,4 +165,15 @@ public class PrototypeObjectTest {
 		assertThat(prototype.clone().isCloneOf(prototype)).isTrue();
 		assertThat(prototype.clone().clone().isCloneOf(prototype)).isTrue();
 	}
+
+	@Test
+	public void prototypes_can_have_names_to_make_it_easier_debug() {
+		PrototypeObject prototype = create("name");
+
+		assertThat(prototype.toString()).isEqualTo("name");
+
+		PrototypeObject clone = prototype.clone("name of clone");
+		assertThat(clone.toString()).isEqualTo("name of clone");
+		assertThat(prototype.toString()).isEqualTo("name");
+	}
 }
