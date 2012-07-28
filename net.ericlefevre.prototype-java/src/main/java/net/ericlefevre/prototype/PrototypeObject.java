@@ -40,6 +40,11 @@ public class PrototypeObject {
 		return this;
 	}
 
+	/**
+	 * Returns a member of this object. If the member is an executable object
+	 * (ie. a method), then that method is executed. Otherwise, just return the
+	 * value.
+	 */
 	public Object member(String name, PrototypeObject... parameters) {
 		Object member = member(name);
 
@@ -66,11 +71,11 @@ public class PrototypeObject {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(String name) {
+	public <T> T _(String name) {
 		return (T) member(name);
 	}
 
-	public PrototypeObject call(String name, PrototypeObject... parameters) {
+	public PrototypeObject $(String name, PrototypeObject... parameters) {
 		return (PrototypeObject) member(name, parameters);
 	}
 
