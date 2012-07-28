@@ -65,8 +65,40 @@ public class PrototypeObject {
 		return member;
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> T get(String name) {
+		return (T) member(name);
+	}
+
+	public PrototypeObject call(String name, PrototypeObject... parameters) {
+		return (PrototypeObject) member(name, parameters);
+	}
+
 	public PrototypeObject execute(PrototypeObject context,
 			PrototypeObject... parameters) {
+		if (parameters.length == 0) {
+			return execute(context);
+		}
+		if (parameters.length == 1) {
+			return execute(context, parameters[0]);
+		}
+		if (parameters.length == 2) {
+			return execute(context, parameters[0], parameters[1]);
+		}
+		return this;
+	}
+
+	public PrototypeObject execute(PrototypeObject context,
+			PrototypeObject parameter) {
+		return this;
+	}
+
+	public PrototypeObject execute(PrototypeObject context) {
+		return this;
+	}
+
+	public PrototypeObject execute(PrototypeObject context,
+			PrototypeObject parameter1, PrototypeObject parameter2) {
 		return this;
 	}
 

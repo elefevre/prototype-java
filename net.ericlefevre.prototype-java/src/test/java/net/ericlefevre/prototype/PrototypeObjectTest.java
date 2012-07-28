@@ -105,6 +105,45 @@ public class PrototypeObjectTest {
 	}
 
 	@Test
+	public void methods_can_have_no_parameters() {
+		PrototypeObject object = create().add("methodName",
+				new PrototypeObject() {
+					@Override
+					public PrototypeObject execute(PrototypeObject context) {
+						return VALUE;
+					}
+				});
+		assertThat(object.member("methodName")).isEqualTo(VALUE);
+	}
+
+	@Test
+	public void methods_can_have_a_single_parameter() {
+		PrototypeObject object = create().add("methodName",
+				new PrototypeObject() {
+					@Override
+					public PrototypeObject execute(PrototypeObject context,
+							PrototypeObject parameter) {
+						return parameter;
+					}
+				});
+		assertThat(object.member("methodName", VALUE)).isEqualTo(VALUE);
+	}
+
+	@Test
+	public void methods_can_have_two_parameters() {
+		PrototypeObject object = create().add("methodName",
+				new PrototypeObject() {
+					@Override
+					public PrototypeObject execute(PrototypeObject context,
+							PrototypeObject parameter1,
+							PrototypeObject parameter2) {
+						return parameter2;
+					}
+				});
+		assertThat(object.member("methodName", null, VALUE)).isEqualTo(VALUE);
+	}
+
+	@Test
 	public void methods_can_refer_to_members_of_clones_of_their_context() {
 		PrototypeObject object = create().add("methodName",
 				new PrototypeObject() {
